@@ -2,9 +2,9 @@ package com.wellsfargo.fsd.boot.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.wellsfargo.fsd.boot.dto.UserDto;
 import com.wellsfargo.fsd.boot.entity.User;
 import com.wellsfargo.fsd.boot.exception.UserException;
+import com.wellsfargo.fsd.boot.service.UserConverter;
 import com.wellsfargo.fsd.boot.service.UserService;
 
 @RestController
@@ -23,33 +24,32 @@ import com.wellsfargo.fsd.boot.service.UserService;
 public class UserRestController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private UserConverter userConverter;
 
 	@GetMapping
-	public ResponseEntity<List<User>> getAllUsers() throws UserException{			
-		return new ResponseEntity<List<User>>(userService.getAllUsers(),HttpStatus.OK);
+	public List<UserDto> getAllUsers() throws UserException{			
+		List<User> getAllUsers = userService.getAllUsers();
+		return userConverter.entityToDto(getAllUsers);
 	}
 
-	/*
-	 * @GetMapping("/{id}") public ResponseEntity<User>
-	 * getAllUsers(@PathVariable("id") int uid) throws UserException{
-	 * ResponseEntity<User> resp = null; User user =userService.getUser(uid);
-	 * if(user!=null) { resp = new ResponseEntity<User>(user,HttpStatus.OK); }else {
-	 * new ResponseEntity<User>(HttpStatus.NOT_FOUND); } return resp; }
-	 */
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable("id") int uid) throws UserException{			
+	@DeleteMapping("/{id}") 
+	public void deleteUser(@PathVariable("id") int uid) throws UserException{
 		userService.deleteUser(uid);
-		return new ResponseEntity<Void>(HttpStatus.OK);
-	}
-	
-	@PostMapping
-	public ResponseEntity<User> addContact(@RequestBody User user) throws UserException{			
-		return new ResponseEntity<User>(userService.add(user), HttpStatus.OK);
 	}
 
-	@PutMapping
-	public ResponseEntity<User> saveUser(@RequestBody User user) throws UserException{			
-		return new ResponseEntity<User>(userService.add(user), HttpStatus.OK);
+	@PostMapping
+	public UserDto addUser(@RequestBody @Valid UserDto userDto) throws UserException{
+		User user = userConverter.dtoToEntity(userDto);
+		user = userService.add(user);
+		return userConverter.entityToDto(user);
 	}
+
+	@PutMapping 
+	public UserDto saveUser(@RequestBody @Valid UserDto userDto) throws UserException{  
+		User user = userConverter.dtoToEntity(userDto);
+		user = userService.save(user);
+		return userConverter.entityToDto(user);
+	}
+
 }

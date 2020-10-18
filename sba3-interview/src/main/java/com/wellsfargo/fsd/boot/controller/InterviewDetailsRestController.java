@@ -3,8 +3,6 @@ package com.wellsfargo.fsd.boot.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +11,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.wellsfargo.fsd.boot.dto.InterviewDetailsDto;
 import com.wellsfargo.fsd.boot.entity.InterviewDetails;
-import com.wellsfargo.fsd.boot.entity.User;
 import com.wellsfargo.fsd.boot.exception.InterviewDetailsException;
+import com.wellsfargo.fsd.boot.service.InterviewDetailsConverter;
 import com.wellsfargo.fsd.boot.service.InterviewDetailsService;
 
 @RestController
@@ -24,37 +22,39 @@ import com.wellsfargo.fsd.boot.service.InterviewDetailsService;
 public class InterviewDetailsRestController {
 	@Autowired
 	private InterviewDetailsService interviewDetailsService;
-
+	
+	@Autowired
+	private InterviewDetailsConverter interviewDetailsConverter;
+	
 	@GetMapping
-	public ResponseEntity<List<InterviewDetails>> getAllInterviewDetails() throws InterviewDetailsException{			
-		return new ResponseEntity<List<InterviewDetails>>(interviewDetailsService.getAllInterviewDetails(),HttpStatus.OK);
+	public List<InterviewDetailsDto> getAllInterviewDetails() throws InterviewDetailsException{			
+		List<InterviewDetails> getAllInterviewDetails = interviewDetailsService.getAllInterviewDetails();
+		return interviewDetailsConverter.entityToDto(getAllInterviewDetails);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<InterviewDetails> getAllInterviewDetails(@PathVariable("id") int intvId) throws InterviewDetailsException{			
-		ResponseEntity<InterviewDetails> resp = null;
+	public InterviewDetailsDto getAllInterviewDetails(@PathVariable("id") int intvId) throws InterviewDetailsException{			
 		InterviewDetails interviewDetails =interviewDetailsService.getInterviewDetails(intvId);
-		if(interviewDetails!=null) {
-			resp = new ResponseEntity<InterviewDetails>(interviewDetails,HttpStatus.OK);
-		}else {
-			 new ResponseEntity<User>(HttpStatus.NOT_FOUND);
-		}
-		return resp;
+		InterviewDetailsDto interviewDetailsDto = interviewDetailsConverter.entityToDto(interviewDetails);
+		return interviewDetailsDto;
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteInterviewDetails(@PathVariable("id") int intvId) throws InterviewDetailsException{			
+	public void deleteInterviewDetails(@PathVariable("id") int intvId) throws InterviewDetailsException{			
 		interviewDetailsService.deleteInterviewDetails(intvId);
-		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 	
 	@PostMapping
-	public ResponseEntity<InterviewDetails> addInterviewDetails(@RequestBody InterviewDetails interviewDetails) throws InterviewDetailsException{			
-		return new ResponseEntity<InterviewDetails>(interviewDetailsService.add(interviewDetails), HttpStatus.OK);
+	public InterviewDetailsDto addInterviewDetails(@RequestBody InterviewDetailsDto interviewDetailsDto) throws InterviewDetailsException{			
+		InterviewDetails interviewDetails = interviewDetailsConverter.dtoToEntity(interviewDetailsDto);
+		interviewDetails = interviewDetailsService.add(interviewDetails);
+		return interviewDetailsConverter.entityToDto(interviewDetails);
 	}
 
 	@PutMapping
-	public ResponseEntity<InterviewDetails> saveInterviewDetails(@RequestBody InterviewDetails interviewDetails) throws InterviewDetailsException{			
-		return new ResponseEntity<InterviewDetails>(interviewDetailsService.add(interviewDetails), HttpStatus.OK);
+	public InterviewDetailsDto saveInterviewDetails(@RequestBody InterviewDetailsDto interviewDetailsDto) throws InterviewDetailsException{			
+		InterviewDetails interviewDetails = interviewDetailsConverter.dtoToEntity(interviewDetailsDto);
+		interviewDetails = interviewDetailsService.save(interviewDetails);
+		return interviewDetailsConverter.entityToDto(interviewDetails);
 	}
 }

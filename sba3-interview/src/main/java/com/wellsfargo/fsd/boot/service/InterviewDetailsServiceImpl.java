@@ -37,7 +37,7 @@ public class InterviewDetailsServiceImpl implements InterviewDetailsService {
 	public InterviewDetails save(InterviewDetails interviewDetails) throws InterviewDetailsException {
 		if(interviewDetails!=null) {
 			if(!interviewDetailsRepo.existsById(interviewDetails.getInterviewId())) {
-				throw new InterviewDetailsException("Contact Id is not found!");
+				throw new InterviewDetailsException("Interview Id is not found!");
 			}
 			interviewDetailsRepo.save(interviewDetails);
 		}
@@ -48,7 +48,7 @@ public class InterviewDetailsServiceImpl implements InterviewDetailsService {
 	@Transactional
 	public boolean deleteInterviewDetails(int interviewId) throws InterviewDetailsException {
 		if(!interviewDetailsRepo.existsById(interviewId)) {
-			throw new InterviewDetailsException("Contact Id is not found!");
+			throw new InterviewDetailsException("Interview Id is not found!");
 		}
 		interviewDetailsRepo.deleteById(interviewId);
 		return true;

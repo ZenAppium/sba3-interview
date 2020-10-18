@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 	public User add(User user) throws UserException {
 		if(user!=null) {
 			if(userRepo.existsById(user.getUserId())) {
-				throw new UserException("Contact Id already in use!");
+				throw new UserException("User Id already in use!");
 			}
 			/*
 			 * if(userRepo.existsByMobile(user.getMobile())) { throw new
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 	public User save(User user) throws UserException {
 		if(user!=null) {
 			if(!userRepo.existsById(user.getUserId())) {
-				throw new UserException("Contact Id is not found!");
+				throw new UserException("User Id is not found!");
 			}
 			userRepo.save(user);
 		}
@@ -47,15 +47,10 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public boolean deleteUser(int userId) throws UserException {
 		if(!userRepo.existsById(userId)) {
-			throw new UserException("Contact Id is not found!");
+			throw new UserException("User Id is not found!");
 		}
 		userRepo.deleteById(userId);
 		return true;
-	}
-
-	@Override
-	public User getUser(int userId) throws UserException {
-		return userRepo.findById(userId).orElse(null);
 	}
 
 	@Override

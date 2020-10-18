@@ -9,9 +9,6 @@ public interface UserService {
 
 	User add(User user) throws UserException;
 	User save(User user) throws UserException;
-	
 	boolean deleteUser(int userId) throws UserException;
-	
-	User getUser(int userId) throws UserException;
 	List<User> getAllUsers() throws UserException;
 }
