@@ -2,15 +2,22 @@ package com.wellsfargo.fsd.boot.entity;
 
 
 
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="users")
 public class User {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer userId;
 	
 	@Column(name="fname")
@@ -25,14 +32,33 @@ public class User {
 	@Column(name="mobile")
 	private String mobile;
 	
-	/*
-	 * @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-	 * 
-	 * @JoinTable(name="post_tags", joinColumns = {@JoinColumn(name="user_id")},
-	 * inverseJoinColumns = {@JoinColumn(name="interview_id")}) private
-	 * Set<InterviewDetails> interviewDetails = new HashSet<>();
-	 */
 	
+	@ManyToMany(mappedBy = "attendees", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	private List<InterviewDetails> interviewDetails;
+	public User() {}
+	
+	
+	public User(Integer userId, String firstName, String lastName, String email, String mobile) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.mobile = mobile;
+	}
+
+	public User(Integer userId, String firstName, String lastName, String email, String mobile,
+			List<InterviewDetails> interviewDetails) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.mobile = mobile;
+		this.interviewDetails = interviewDetails;
+	}
+
+
 	public Integer getUserId() {
 		return userId;
 	}
@@ -73,11 +99,13 @@ public class User {
 		this.mobile = mobile;
 	}
 
-	/*
-	 * public Set<InterviewDetails> getInterviewDetails() { return interviewDetails;
-	 * }
-	 * 
-	 * public void setInterviewDetails(Set<InterviewDetails> interviewDetails) {
-	 * this.interviewDetails = interviewDetails; }
-	 */
+
+	public List<InterviewDetails> getInterviewDetails() {
+		return interviewDetails;
+	}
+
+	public void setInterviewDetails(List<InterviewDetails> interviewDetails) {
+		this.interviewDetails = interviewDetails;
+	}
+	
 }
